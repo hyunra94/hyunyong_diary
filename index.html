@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 그림일기 생성기</title>
+  <link rel="icon" href="https://hyunra94.github.io/assets/favicon.png">
+  <meta property="og:title" content="그림일기 생성기">
+  <meta property="og:description" content="사진을 올리면 귀여운 손그림 일기로 변환해드려요">
+  <meta property="og:image" content="https://hyunra94.github.io/assets/og-default.png">
+  <meta property="og:url" content="https://hyunra94.github.io/hyunyong_diary/">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, #FFE4E9 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, #FFF0F5 0%, transparent 40%),
+        linear-gradient(135deg, #FFF5F7 0%, #FFE4E1 100%);
+      min-height: 100vh;
+      padding: 24px 16px;
+      color: #5C4033;
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25), 0 2px 8px rgba(255, 182, 193, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 209, 220, 0.5);
+    }
+
+    h1 {
+      font-family: 'Gaegu', 'Noto Sans KR', sans-serif;
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 6px;
+      color: #D4756B;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #A08A7E;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #8B5A4F;
+    }
+
+    input[type="text"], input[type="date"], textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #FFD1DC;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      background: #FFFAFB;
+      color: #5C4033;
+      transition: all 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #FFB6C1;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.2);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .upload-area {
+      display: block;
+      border: 2px dashed #FFD1DC;
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #FFFAFB;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: #FFB6C1;
+      background: #FFF5F7;
+    }
+
+    .upload-area input[type="file"] { display: none; }
+
+    .upload-icon {
+      font-size: 32px;
+      margin-bottom: 6px;
+    }
+
+    .upload-text {
+      font-size: 14px;
+      color: #8B5A4F;
+      font-weight: 500;
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: #B8A199;
+      margin-top: 4px;
+    }
+
+    .preview {
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 10px;
+      display: none;
+      margin: 0 auto;
+    }
+
+    .preview.show { display: block; }
+
+    .weather-buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .weather-btn {
+      padding: 10px 4px;
+      font-size: 22px;
+      border: 2px solid #FFD1DC;
+      border-radius: 10px;
+      background: #FFFAFB;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .weather-btn:hover {
+      background: #FFF5F7;
+    }
+
+    .weather-btn.active {
+      border-color: #FFB6C1;
+      background: #FFE4E9;
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.3);
+    }
+
+    .formatted-date {
+      font-size: 12px;
+      color: #D4756B;
+      margin-top: 6px;
+      font-weight: 500;
+      font-family: 'Gaegu', sans-serif;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #FFB6C1, #FF9AAC);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 182, 193, 0.5);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px dashed #FFD1DC;
+      display: none;
+    }
+
+    .result.show { display: block; }
+
+    .result-title {
+      font-family: 'Gaegu', sans-serif;
+      font-size: 18px;
+      color: #D4756B;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .result img {
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      display: block;
+    }
+
+    .url-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .url-row input {
+      flex: 1;
+      font-size: 11px;
+      padding: 10px 12px;
+    }
+
+    .icon-btn {
+      padding: 10px 14px;
+      background: #FFB6C1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: #FF9AAC;
+    }
+
+    .icon-btn.success { background: #95C99B; }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .button-row .icon-btn {
+      flex: 1;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: #A08A7E;
+      margin-top: 10px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .loading-text {
+      text-align: center;
+      color: #D4756B;
+      font-size: 13px;
+      margin-top: 8px;
+      font-family: 'Gaegu', sans-serif;
+    }
+
+    .deco {
+      text-align: center;
+      font-size: 14px;
+      color: #FFB6C1;
+      margin-bottom: 12px;
+      letter-spacing: 4px;
+    }
+
+    /* 작은 화면 대응 */
+    @media (max-width: 480px) {
+      .container { padding: 24px 20px; }
+      h1 { font-size: 24px; }
+      .weather-buttons { gap: 6px; }
+      .weather-btn { font-size: 20px; padding: 8px 2px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="deco">· · ✿ · ·</div>
+    <h1>🌸 그림일기 생성기 🌸</h1>
+    <p class="subtitle">사진을 올리고 일기를 적으면 손그림 일기로 변환됩니다</p>
+
+    <div class="field">
+      <label>📷 사진 업로드</label>
+      <label class="upload-area" id="uploadArea">
+        <input type="file" id="photoInput" accept="image/*">
+        <div id="uploadPlaceholder">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">클릭해서 사진 선택</div>
+          <div class="upload-hint">JPG, PNG, WEBP (최대 50MB)</div>
+        </div>
+        <img id="preview" class="preview">
+      </label>
+    </div>
+
+    <div class="field">
+      <label>📅 날짜</label>
+      <input type="date" id="dateInput">
+      <div class="formatted-date" id="formattedDate"></div>
+    </div>
+
+    <div class="field">
+      <label>☀️ 날씨</label>
+      <div class="weather-buttons">
+        <button type="button" class="weather-btn active" data-weather="☀️">☀️</button>
+        <button type="button" class="weather-btn" data-weather="🌤️">🌤️</button>
+        <button type="button" class="weather-btn" data-weather="☁️">☁️</button>
+        <button type="button" class="weather-btn" data-weather="🌧️">🌧️</button>
+        <button type="button" class="weather-btn" data-weather="❄️">❄️</button>
+      </div>
+      <input type="text" id="weatherInput" placeholder="이모지 직접 입력 가능 (예: 🌈)" value="☀️">
+    </div>
+
+    <div class="field">
+      <label>✏️ 일기 내용</label>
+      <textarea id="diaryInput" placeholder="오늘 하루는 어땠어?&#10;예: 날씨 좋은 날 은호랑 데이트 하고왔다!"></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn">✨ 그림일기 만들기</button>
+    <div class="loading-text" id="loadingText" style="display:none;">생성 중... (30~60초 소요됩니다 🌸)</div>
+
+    <div class="result" id="result">
+      <div class="result-title">✿ 완성된 그림일기 ✿</div>
+      <img id="resultImg" alt="생성된 그림일기">
+      <div class="url-row">
+        <input type="text" id="urlInput" readonly>
+        <button class="icon-btn" id="copyBtn">📋 복사</button>
+      </div>
+      <div class="button-row">
+        <button class="icon-btn" id="downloadBtn">⬇️ 다운로드</button>
+        <button class="icon-btn" id="newBtn" style="background:#E8B4BC;">🔄 새로 만들기</button>
+      </div>
+      <p class="helper">💡 URL을 노션에 붙여넣으면 자동으로 이미지가 임베드됩니다</p>
+    </div>
+  </div>
+
+  <script>
+    // ===== 설정 =====
+    // ⚠️ Worker 배포 후 실제 URL로 교체하세요
+    const WORKER_URL = 'https://diary-worker.abyss9405.workers.dev/';
+    const SECRET_KEY = 'hyunra2026';
+
+    // ===== DOM 요소 =====
+    const photoInput = document.getElementById('photoInput');
+    const preview = document.getElementById('preview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const dateInput = document.getElementById('dateInput');
+    const formattedDate = document.getElementById('formattedDate');
+    const weatherBtns = document.querySelectorAll('.weather-btn');
+    const weatherInput = document.getElementById('weatherInput');
+    const diaryInput = document.getElementById('diaryInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingText = document.getElementById('loadingText');
+    const result = document.getElementById('result');
+    const resultImg = document.getElementById('resultImg');
+    const urlInput = document.getElementById('urlInput');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const newBtn = document.getElementById('newBtn');
+
+    // ===== 오늘 날짜 자동 입력 =====
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+    // ===== 날짜 포맷터 =====
+    const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}.${m}.${day} ${DAYS[d.getDay()]}`;
+    }
+
+    function updateFormattedDate() {
+      formattedDate.textContent = '→ ' + formatDate(dateInput.value);
+    }
+    dateInput.addEventListener('change', updateFormattedDate);
+    updateFormattedDate();
+
+    // ===== 사진 미리보기 =====
+    photoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        preview.src = ev.target.result;
+        preview.classList.add('show');
+        uploadPlaceholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ===== 날씨 버튼 =====
+    weatherBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        weatherBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        weatherInput.value = btn.dataset.weather;
+      });
+    });
+
+    weatherInput.addEventListener('input', () => {
+      weatherBtns.forEach(b => b.classList.remove('active'));
+    });
+
+    // ===== 생성 요청 =====
+    submitBtn.addEventListener('click', async () => {
+      const file = photoInput.files[0];
+      if (!file) {
+        alert('사진을 업로드해주세요!');
+        return;
+      }
+      const diary = diaryInput.value.trim();
+      if (!diary) {
+        alert('일기 내용을 입력해주세요!');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '✨ 생성 중...';
+      loadingText.style.display = 'block';
+      result.classList.remove('show');
+
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('date', formatDate(dateInput.value));
+        formData.append('weather', weatherInput.value || '☀️');
+        formData.append('diary', diary);
+
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'X-Secret-Key': SECRET_KEY },
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || `HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        resultImg.src = data.imageUrl;
+        urlInput.value = data.imageUrl;
+        result.classList.add('show');
+        result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (error) {
+        alert('생성 실패 😢\n\n' + error.message);
+        console.error(error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✨ 그림일기 만들기';
+        loadingText.style.display = 'none';
+      }
+    });
+
+    // ===== URL 복사 =====
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(urlInput.value);
+        copyBtn.textContent = '✓ 복사됨';
+        copyBtn.classList.add('success');
+        setTimeout(() => {
+          copyBtn.textContent = '📋 복사';
+          copyBtn.classList.remove('success');
+        }, 2000);
+      } catch (e) {
+        urlInput.select();
+        document.execCommand('copy');
+      }
+    });
+
+    // ===== 다운로드 =====
+    downloadBtn.addEventListener('click', async () => {
+      try {
+        const res = await fetch(urlInput.value);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `diary-${formatDate(dateInput.value).replace(/\s/g, '-')}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        alert('다운로드 실패: ' + e.message);
+      }
+    });
+
+    // ===== 새로 만들기 =====
+    newBtn.addEventListener('click', () => {
+      result.classList.remove('show');
+      photoInput.value = '';
+      preview.src = '';
+      preview.classList.remove('show');
+      uploadPlaceholder.style.display = 'block';
+      diaryInput.value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
