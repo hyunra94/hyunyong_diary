@@ -19,19 +19,23 @@
         radial-gradient(circle at 80% 80%, #FFF0F5 0%, transparent 40%),
         linear-gradient(135deg, #FFF5F7 0%, #FFE4E1 100%);
       min-height: 100vh;
-      padding: 20px 12px;
+      padding: 14px 6px;
       color: #5C4033;
       -webkit-tap-highlight-color: transparent;
     }
     .app {
-      max-width: 560px;
+      max-width: 580px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.9);
       border-radius: 24px;
-      padding: 24px 20px;
+      padding: 22px 14px;
       box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 209, 220, 0.5);
+    }
+    @media (min-width: 600px) {
+      body { padding: 24px 16px; }
+      .app { padding: 28px 24px; }
     }
     h1 {
       font-family: 'Gaegu', sans-serif;
@@ -120,13 +124,13 @@
       color: #A08A7E;
       padding: 4px 0;
     }
-    .weekday-header div:first-child { color: #E08A8A; }
-    .weekday-header div:last-child { color: #8AAEE0; }
+    .weekday-header div:nth-child(6) { color: #8AAEE0; }
+    .weekday-header div:nth-child(7) { color: #E08A8A; }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 3px;
     }
     .cal-cell {
       aspect-ratio: 1;
@@ -141,7 +145,7 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      padding: 4px;
+      padding: 3px;
     }
     .cal-cell.empty {
       background: transparent;
@@ -167,7 +171,7 @@
       backdrop-filter: blur(2px);
     }
     .day-num {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 600;
       color: #5C4033;
       line-height: 1;
@@ -178,10 +182,10 @@
     .cal-cell.has-image.saturday .day-num { color: #5C4033; }
     .indicator {
       position: absolute;
-      bottom: 4px;
-      right: 4px;
-      width: 6px;
-      height: 6px;
+      bottom: 5px;
+      right: 5px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #FFB6C1;
     }
@@ -189,20 +193,20 @@
     /* 갤러리 */
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
     .gallery-item {
       aspect-ratio: 2/3;
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
       background: #FFFAFB;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.2);
+      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
       transition: all 0.2s;
     }
-    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3); }
+    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 182, 193, 0.35); }
     .gallery-item img {
       width: 100%;
       height: 100%;
@@ -214,8 +218,8 @@
       bottom: 0; left: 0; right: 0;
       background: linear-gradient(transparent, rgba(0,0,0,0.6));
       color: white;
-      font-size: 10px;
-      padding: 12px 6px 4px;
+      font-size: 13px;
+      padding: 16px 10px 8px;
       font-weight: 500;
       font-family: 'Gaegu', sans-serif;
     }
@@ -423,6 +427,57 @@
       box-shadow: 0 2px 4px rgba(255, 182, 193, 0.25);
       font-weight: 700;
     }
+
+    /* 읽기 전용 일기 표시 */
+    .diary-readonly {
+      background: #FFFAFB;
+      border: 1px solid #FFE4E9;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .diary-readonly .meta {
+      font-size: 13px;
+      color: #A08A7E;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .diary-readonly .meta .weather { font-size: 16px; }
+    .diary-readonly .text {
+      color: #5C4033;
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .diary-readonly .text.empty {
+      color: #B8A199;
+      font-style: italic;
+    }
+
+    /* 다시 만들기/수정 토글 버튼 */
+    .toggle-edit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #FFE4E9;
+      color: #D4756B;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.15s;
+    }
+    .toggle-edit-btn:hover { background: #FFD1DC; }
+    .edit-form {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed #FFD1DC;
+    }
   </style>
 </head>
 <body>
@@ -443,7 +498,7 @@
 
     <div id="calendarView" class="view active">
       <div class="weekday-header">
-        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+        <div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div><div>일</div>
       </div>
       <div id="calendarGrid" class="calendar-grid"></div>
     </div>
@@ -596,7 +651,7 @@
     function renderCalendar() {
       const y = state.currentMonth.getFullYear();
       const m = state.currentMonth.getMonth();
-      const firstDay = new Date(y, m, 1).getDay(); // 일=0
+      const firstDay = (new Date(y, m, 1).getDay() + 6) % 7; // 월=0 ~ 일=6
       const lastDate = new Date(y, m + 1, 0).getDate();
       const today = todayISO();
 
@@ -687,9 +742,9 @@
     function renderDetailBody(entry) {
       const hasImage = !!entry.imageUrl;
       currentMode = 'generate'; // 모달 열릴 때마다 기본 모드로 리셋
-      detailBody.innerHTML = `
-        ${hasImage ? `<img src="${entry.imageUrl}" class="image-display" alt="그림일기">` : ''}
 
+      // 편집 폼 HTML (재사용)
+      const formHtml = `
         <div class="mode-toggle">
           <button type="button" class="mode-btn active" data-mode="generate">✨ AI로 만들기</button>
           <button type="button" class="mode-btn" data-mode="upload">📤 직접 업로드</button>
@@ -717,11 +772,52 @@
 
         <button class="submit-btn" id="generateBtn">✨ ${hasImage ? '다시 만들기' : '그림일기 만들기'}</button>
         <div class="loading-text" id="loadingText" style="display:none;">생성 중... (30~60초 소요됩니다 🌸)</div>
-
-        ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
       `;
 
+      if (hasImage) {
+        // 이미 그림이 있으면: 깔끔한 뷰 + 다시 만들기 토글
+        detailBody.innerHTML = `
+          <img src="${entry.imageUrl}" class="image-display" alt="그림일기">
+          <div class="diary-readonly">
+            ${(entry.weather || entry.dayCount) ? `<div class="meta">
+              ${entry.weather ? `<span class="weather">${escapeHtml(entry.weather)}</span>` : ''}
+              ${entry.dayCount ? `<span>· ${escapeHtml(entry.dayCount)}</span>` : ''}
+            </div>` : ''}
+            <div class="text${entry.diary ? '' : ' empty'}">${entry.diary ? escapeHtml(entry.diary) : '(일기 내용 없음)'}</div>
+          </div>
+          ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
+          <button class="toggle-edit-btn" id="toggleEditBtn">🔄 다시 만들거나 수정하기</button>
+          <div class="edit-form" id="editForm" style="display:none;">${formHtml}</div>
+        `;
+
+        const toggleBtn = $('toggleEditBtn');
+        const editForm = $('editForm');
+        toggleBtn.addEventListener('click', () => {
+          const isOpen = editForm.style.display !== 'none';
+          if (isOpen) {
+            editForm.style.display = 'none';
+            toggleBtn.textContent = '🔄 다시 만들거나 수정하기';
+          } else {
+            editForm.style.display = 'block';
+            toggleBtn.textContent = '✕ 닫기';
+            setupFormHandlers(entry, hasImage);
+            setTimeout(() => editForm.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+          }
+        });
+      } else {
+        // 그림이 없으면: 폼 바로 표시
+        detailBody.innerHTML = `
+          ${formHtml}
+          ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
+        `;
+        setupFormHandlers(entry, hasImage);
+      }
+    }
+
+    function setupFormHandlers(entry, hasImage) {
       const photoInput = $('photoInput');
+      if (!photoInput) return;
+
       const uploadPreview = $('uploadPreview');
       const uploadPlaceholder = $('uploadPlaceholder');
       photoInput.addEventListener('change', (e) => {
