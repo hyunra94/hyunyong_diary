@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌸 그림일기 생성기</title>
+  <title>🌸 그림일기 캘린더</title>
   <link rel="icon" href="https://hyunra94.github.io/assets/favicon.png">
-  <meta property="og:title" content="그림일기 생성기">
-  <meta property="og:description" content="사진을 올리면 귀여운 손그림 일기로 변환해드려요">
+  <meta property="og:title" content="그림일기 캘린더">
+  <meta property="og:description" content="노션과 연동되는 그림일기 캘린더">
   <meta property="og:image" content="https://hyunra94.github.io/assets/og-default.png">
   <meta property="og:url" content="https://hyunra94.github.io/hyunyong_diary/">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Noto Sans KR', sans-serif;
       background:
@@ -20,70 +19,313 @@
         radial-gradient(circle at 80% 80%, #FFF0F5 0%, transparent 40%),
         linear-gradient(135deg, #FFF5F7 0%, #FFE4E1 100%);
       min-height: 100vh;
-      padding: 24px 16px;
+      padding: 20px 12px;
       color: #5C4033;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    .container {
+    .app {
       max-width: 560px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.9);
       border-radius: 24px;
-      padding: 32px 28px;
-      box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25), 0 2px 8px rgba(255, 182, 193, 0.15);
+      padding: 24px 20px;
+      box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 209, 220, 0.5);
     }
-
     h1 {
-      font-family: 'Gaegu', 'Noto Sans KR', sans-serif;
+      font-family: 'Gaegu', sans-serif;
       text-align: center;
-      font-size: 28px;
-      margin-bottom: 6px;
+      font-size: 26px;
       color: #D4756B;
-      font-weight: 700;
+      margin-bottom: 4px;
     }
-
     .subtitle {
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
       color: #A08A7E;
-      margin-bottom: 28px;
-    }
-
-    .field {
       margin-bottom: 18px;
     }
 
-    label {
+    /* 탭 */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: #FFF0F2;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: #A08A7E;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab.active {
+      background: white;
+      color: #D4756B;
+      box-shadow: 0 2px 6px rgba(255, 182, 193, 0.3);
+      font-weight: 700;
+    }
+
+    /* 월 네비 */
+    .month-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .month-nav button {
+      background: #FFE4E9;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #D4756B;
+      transition: all 0.15s;
+    }
+    .month-nav button:hover { background: #FFD1DC; }
+    .month-label {
+      font-family: 'Gaegu', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #D4756B;
+    }
+
+    /* 뷰 컨테이너 */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* 캘린더 */
+    .weekday-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .weekday-header div {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #A08A7E;
+      padding: 4px 0;
+    }
+    .weekday-header div:first-child { color: #E08A8A; }
+    .weekday-header div:last-child { color: #8AAEE0; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: #FFFAFB;
+      border: 1px solid #FFE4E9;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 4px;
+    }
+    .cal-cell.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+    .cal-cell:not(.empty):hover {
+      border-color: #FFB6C1;
+      transform: translateY(-1px);
+    }
+    .cal-cell.today {
+      border: 2px solid #FFB6C1;
+      background: #FFF5F7;
+    }
+    .cal-cell.has-image {
+      background-size: cover;
+      background-position: center;
+    }
+    .cal-cell.has-image .day-num {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 1px 5px;
+      border-radius: 4px;
+      backdrop-filter: blur(2px);
+    }
+    .day-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: #5C4033;
+      line-height: 1;
+    }
+    .cal-cell.sunday .day-num { color: #E08A8A; }
+    .cal-cell.saturday .day-num { color: #8AAEE0; }
+    .cal-cell.has-image.sunday .day-num,
+    .cal-cell.has-image.saturday .day-num { color: #5C4033; }
+    .indicator {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FFB6C1;
+    }
+
+    /* 갤러리 */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .gallery-item {
+      aspect-ratio: 2/3;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #FFFAFB;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.2);
+      transition: all 0.2s;
+    }
+    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3); }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.6));
+      color: white;
+      font-size: 10px;
+      padding: 12px 6px 4px;
+      font-weight: 500;
+      font-family: 'Gaegu', sans-serif;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #A08A7E;
+      font-size: 13px;
+    }
+    .empty-state .emoji { font-size: 36px; margin-bottom: 8px; }
+
+    /* 로딩 */
+    .loader {
+      text-align: center;
+      padding: 40px;
+      color: #D4756B;
+      font-family: 'Gaegu', sans-serif;
+      font-size: 14px;
+    }
+
+    /* 디테일 모달 */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 560px;
+      max-height: 92vh;
+      overflow-y: auto;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 32px;
+      animation: slideUp 0.3s;
+    }
+    @media (min-width: 600px) {
+      .modal { align-items: center; }
+      .modal-content { border-radius: 24px; max-height: 90vh; }
+    }
+    @keyframes slideUp { from { transform: translateY(40px); } to { transform: translateY(0); } }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .modal-date {
+      font-family: 'Gaegu', sans-serif;
+      font-size: 22px;
+      color: #D4756B;
+      font-weight: 700;
+    }
+    .modal-day-count {
+      font-size: 12px;
+      color: #A08A7E;
+      margin-top: 2px;
+    }
+    .close-btn {
+      background: #FFE4E9;
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #D4756B;
+    }
+
+    .image-display {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .field { margin-bottom: 16px; }
+    .field label {
       display: block;
       font-size: 13px;
       font-weight: 500;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #8B5A4F;
     }
-
-    input[type="text"], input[type="date"], textarea {
+    .field input, .field textarea {
       width: 100%;
-      padding: 12px 14px;
+      padding: 10px 12px;
       border: 2px solid #FFD1DC;
-      border-radius: 12px;
+      border-radius: 10px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px;
       background: #FFFAFB;
       color: #5C4033;
-      transition: all 0.2s;
     }
-
-    input:focus, textarea:focus {
+    .field input:focus, .field textarea:focus {
       outline: none;
       border-color: #FFB6C1;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.2);
+      background: white;
     }
-
-    textarea {
-      min-height: 80px;
+    .field textarea {
+      min-height: 70px;
       resize: vertical;
       line-height: 1.5;
     }
@@ -91,440 +333,423 @@
     .upload-area {
       display: block;
       border: 2px dashed #FFD1DC;
-      border-radius: 14px;
-      padding: 28px 20px;
+      border-radius: 12px;
+      padding: 24px 16px;
       text-align: center;
       cursor: pointer;
       background: #FFFAFB;
-      transition: all 0.2s;
-      position: relative;
+      margin-bottom: 16px;
     }
-
-    .upload-area:hover {
-      border-color: #FFB6C1;
-      background: #FFF5F7;
-    }
-
-    .upload-area input[type="file"] { display: none; }
-
-    .upload-icon {
-      font-size: 32px;
-      margin-bottom: 6px;
-    }
-
-    .upload-text {
-      font-size: 14px;
-      color: #8B5A4F;
-      font-weight: 500;
-    }
-
-    .upload-hint {
-      font-size: 12px;
-      color: #B8A199;
-      margin-top: 4px;
-    }
-
-    .preview {
-      max-width: 100%;
-      max-height: 240px;
-      border-radius: 10px;
-      display: none;
-      margin: 0 auto;
-    }
-
-    .preview.show { display: block; }
-
-    .weather-buttons {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .weather-btn {
-      padding: 10px 4px;
-      font-size: 22px;
-      border: 2px solid #FFD1DC;
-      border-radius: 10px;
-      background: #FFFAFB;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .weather-btn:hover {
-      background: #FFF5F7;
-    }
-
-    .weather-btn.active {
-      border-color: #FFB6C1;
-      background: #FFE4E9;
-      transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.3);
-    }
-
-    .formatted-date {
-      font-size: 12px;
-      color: #D4756B;
-      margin-top: 6px;
-      font-weight: 500;
-      font-family: 'Gaegu', sans-serif;
-    }
+    .upload-area input { display: none; }
+    .upload-icon { font-size: 28px; margin-bottom: 4px; }
+    .upload-text { font-size: 13px; color: #8B5A4F; font-weight: 500; }
+    .upload-hint { font-size: 11px; color: #B8A199; margin-top: 4px; }
+    .upload-preview { max-width: 100%; max-height: 180px; border-radius: 8px; margin: 0 auto; }
 
     .submit-btn {
       width: 100%;
-      padding: 16px;
-      font-size: 15px;
+      padding: 14px;
+      font-size: 14px;
       font-weight: 700;
       color: white;
       background: linear-gradient(135deg, #FFB6C1, #FF9AAC);
       border: none;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
       box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
-      margin-top: 8px;
       letter-spacing: 0.5px;
     }
-
-    .submit-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(255, 182, 193, 0.5);
-    }
-
-    .submit-btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .result {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px dashed #FFD1DC;
-      display: none;
-    }
-
-    .result.show { display: block; }
-
-    .result-title {
-      font-family: 'Gaegu', sans-serif;
-      font-size: 18px;
-      color: #D4756B;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .result img {
-      width: 100%;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .notion-link {
       display: block;
-    }
-
-    .url-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .url-row input {
-      flex: 1;
-      font-size: 11px;
-      padding: 10px 12px;
-    }
-
-    .icon-btn {
-      padding: 10px 14px;
-      background: #FFB6C1;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-
-    .icon-btn:hover {
-      background: #FF9AAC;
-    }
-
-    .icon-btn.success { background: #95C99B; }
-
-    .button-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .button-row .icon-btn {
-      flex: 1;
-    }
-
-    .helper {
-      font-size: 12px;
-      color: #A08A7E;
-      margin-top: 10px;
       text-align: center;
-      line-height: 1.5;
+      margin-top: 10px;
+      padding: 10px;
+      background: #FFE4E9;
+      color: #D4756B;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 12px;
     }
-
     .loading-text {
       text-align: center;
       color: #D4756B;
-      font-size: 13px;
+      font-size: 12px;
       margin-top: 8px;
       font-family: 'Gaegu', sans-serif;
     }
-
-    .deco {
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #5C4033;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 200;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      max-width: 90vw;
       text-align: center;
-      font-size: 14px;
-      color: #FFB6C1;
-      margin-bottom: 12px;
-      letter-spacing: 4px;
-    }
-
-    /* 작은 화면 대응 */
-    @media (max-width: 480px) {
-      .container { padding: 24px 20px; }
-      h1 { font-size: 24px; }
-      .weather-buttons { gap: 6px; }
-      .weather-btn { font-size: 20px; padding: 8px 2px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="deco">· · ✿ · ·</div>
-    <h1>🌸 그림일기 생성기 🌸</h1>
-    <p class="subtitle">사진을 올리고 일기를 적으면 손그림 일기로 변환됩니다</p>
+  <div class="app">
+    <h1>🌸 그림일기 캘린더 🌸</h1>
+    <p class="subtitle">노션과 연동되는 손그림 일기장</p>
 
-    <div class="field">
-      <label>📷 사진 업로드</label>
-      <label class="upload-area" id="uploadArea">
-        <input type="file" id="photoInput" accept="image/*">
-        <div id="uploadPlaceholder">
-          <div class="upload-icon">🖼️</div>
-          <div class="upload-text">클릭해서 사진 선택</div>
-          <div class="upload-hint">JPG, PNG, WEBP (최대 50MB)</div>
+    <div class="tabs">
+      <button class="tab active" data-view="calendar">📅 캘린더</button>
+      <button class="tab" data-view="gallery">🖼️ 갤러리</button>
+    </div>
+
+    <div class="month-nav">
+      <button id="prevMonth">◀</button>
+      <div class="month-label" id="monthLabel">2026년 5월</div>
+      <button id="nextMonth">▶</button>
+    </div>
+
+    <div id="calendarView" class="view active">
+      <div class="weekday-header">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+
+    <div id="galleryView" class="view">
+      <div id="galleryGrid" class="gallery-grid"></div>
+    </div>
+  </div>
+
+  <!-- 디테일 모달 -->
+  <div id="detailModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div class="modal-date" id="detailDate"></div>
+          <div class="modal-day-count" id="detailDayCount"></div>
         </div>
-        <img id="preview" class="preview">
-      </label>
-    </div>
-
-    <div class="field">
-      <label>📅 날짜</label>
-      <input type="date" id="dateInput">
-      <div class="formatted-date" id="formattedDate"></div>
-    </div>
-
-    <div class="field">
-      <label>☀️ 날씨</label>
-      <div class="weather-buttons">
-        <button type="button" class="weather-btn active" data-weather="☀️">☀️</button>
-        <button type="button" class="weather-btn" data-weather="🌤️">🌤️</button>
-        <button type="button" class="weather-btn" data-weather="☁️">☁️</button>
-        <button type="button" class="weather-btn" data-weather="🌧️">🌧️</button>
-        <button type="button" class="weather-btn" data-weather="❄️">❄️</button>
+        <button class="close-btn" id="closeBtn">✕</button>
       </div>
-      <input type="text" id="weatherInput" placeholder="이모지 직접 입력 가능 (예: 🌈)" value="☀️">
-    </div>
-
-    <div class="field">
-      <label>✏️ 일기 내용</label>
-      <textarea id="diaryInput" placeholder="오늘 하루는 어땠어?&#10;예: 날씨 좋은 날 은호랑 데이트 하고왔다!"></textarea>
-    </div>
-
-    <button class="submit-btn" id="submitBtn">✨ 그림일기 만들기</button>
-    <div class="loading-text" id="loadingText" style="display:none;">생성 중... (30~60초 소요됩니다 🌸)</div>
-
-    <div class="result" id="result">
-      <div class="result-title">✿ 완성된 그림일기 ✿</div>
-      <img id="resultImg" alt="생성된 그림일기">
-      <div class="url-row">
-        <input type="text" id="urlInput" readonly>
-        <button class="icon-btn" id="copyBtn">📋 복사</button>
-      </div>
-      <div class="button-row">
-        <button class="icon-btn" id="downloadBtn">⬇️ 다운로드</button>
-        <button class="icon-btn" id="newBtn" style="background:#E8B4BC;">🔄 새로 만들기</button>
-      </div>
-      <p class="helper">💡 URL을 노션에 붙여넣으면 자동으로 이미지가 임베드됩니다</p>
+      <div id="detailBody"></div>
     </div>
   </div>
 
   <script>
     // ===== 설정 =====
-    // ⚠️ Worker 배포 후 실제 URL로 교체하세요
-    const WORKER_URL = 'https://diary-worker.abyss9405.workers.dev/';
+    const WORKER_URL = 'https://diary-worker.abyss9405.workers.dev';
     const SECRET_KEY = 'hyunra2026';
 
-    // ===== DOM 요소 =====
-    const photoInput = document.getElementById('photoInput');
-    const preview = document.getElementById('preview');
-    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-    const dateInput = document.getElementById('dateInput');
-    const formattedDate = document.getElementById('formattedDate');
-    const weatherBtns = document.querySelectorAll('.weather-btn');
-    const weatherInput = document.getElementById('weatherInput');
-    const diaryInput = document.getElementById('diaryInput');
-    const submitBtn = document.getElementById('submitBtn');
-    const loadingText = document.getElementById('loadingText');
-    const result = document.getElementById('result');
-    const resultImg = document.getElementById('resultImg');
-    const urlInput = document.getElementById('urlInput');
-    const copyBtn = document.getElementById('copyBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const newBtn = document.getElementById('newBtn');
+    const DAYS_KR = ['일', '월', '화', '수', '목', '금', '토'];
 
-    // ===== 오늘 날짜 자동 입력 =====
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    dateInput.value = `${yyyy}-${mm}-${dd}`;
+    // ===== 상태 =====
+    const state = {
+      currentMonth: new Date(),
+      view: 'calendar',
+      entries: {},        // ISO date → entry
+      selectedDate: null
+    };
 
-    // ===== 날짜 포맷터 =====
-    const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    function formatDate(dateStr) {
-      if (!dateStr) return '';
-      const d = new Date(dateStr);
+    // ===== DOM =====
+    const $ = (id) => document.getElementById(id);
+    const tabs = document.querySelectorAll('.tab');
+    const calView = $('calendarView');
+    const galView = $('galleryView');
+    const calGrid = $('calendarGrid');
+    const galGrid = $('galleryGrid');
+    const monthLabel = $('monthLabel');
+    const modal = $('detailModal');
+    const detailDate = $('detailDate');
+    const detailDayCount = $('detailDayCount');
+    const detailBody = $('detailBody');
+
+    // ===== 유틸 =====
+    function isoFromDate(d) {
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
-      return `${y}.${m}.${day} ${DAYS[d.getDay()]}`;
+      return `${y}-${m}-${day}`;
+    }
+    function monthKey(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+    function todayISO() { return isoFromDate(new Date()); }
+    function showToast(msg, ms = 2500) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), ms);
     }
 
-    function updateFormattedDate() {
-      formattedDate.textContent = '→ ' + formatDate(dateInput.value);
+    // ===== API =====
+    async function fetchMonthEntries(month) {
+      const res = await fetch(`${WORKER_URL}/entries?month=${month}`, {
+        headers: { 'X-Secret-Key': SECRET_KEY }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return data.entries || [];
     }
-    dateInput.addEventListener('change', updateFormattedDate);
-    updateFormattedDate();
 
-    // ===== 사진 미리보기 =====
-    photoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        preview.src = ev.target.result;
-        preview.classList.add('show');
-        uploadPlaceholder.style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    });
+    async function fetchEntry(date) {
+      const res = await fetch(`${WORKER_URL}/entries/${date}`, {
+        headers: { 'X-Secret-Key': SECRET_KEY }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return data.entry;
+    }
 
-    // ===== 날씨 버튼 =====
-    weatherBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        weatherBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        weatherInput.value = btn.dataset.weather;
+    async function generateImage(date, weather, diary, photoFile) {
+      const fd = new FormData();
+      fd.append('date', date);
+      fd.append('weather', weather);
+      fd.append('diary', diary);
+      fd.append('image', photoFile);
+      const res = await fetch(`${WORKER_URL}/generate`, {
+        method: 'POST',
+        headers: { 'X-Secret-Key': SECRET_KEY },
+        body: fd
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(errData.error || '생성 실패');
+      }
+      return await res.json();
+    }
+
+    // ===== 렌더링 =====
+    async function renderCurrentMonth() {
+      const mKey = monthKey(state.currentMonth);
+      monthLabel.textContent = `${state.currentMonth.getFullYear()}년 ${state.currentMonth.getMonth() + 1}월`;
+
+      calGrid.innerHTML = '<div class="loader" style="grid-column:1/-1;">불러오는 중...</div>';
+      galGrid.innerHTML = '<div class="loader" style="grid-column:1/-1;">불러오는 중...</div>';
+
+      try {
+        const entries = await fetchMonthEntries(mKey);
+        state.entries = {};
+        entries.forEach(e => { if (e.date) state.entries[e.date] = e; });
+
+        renderCalendar();
+        renderGallery();
+      } catch (e) {
+        calGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="emoji">😢</div>불러오기 실패<br><small>${e.message}</small></div>`;
+        galGrid.innerHTML = '';
+      }
+    }
+
+    function renderCalendar() {
+      const y = state.currentMonth.getFullYear();
+      const m = state.currentMonth.getMonth();
+      const firstDay = new Date(y, m, 1).getDay(); // 일=0
+      const lastDate = new Date(y, m + 1, 0).getDate();
+      const today = todayISO();
+
+      let html = '';
+      // 빈 셀 (이번 달 1일 요일까지)
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div class="cal-cell empty"></div>';
+      }
+      // 날짜 셀
+      for (let d = 1; d <= lastDate; d++) {
+        const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const entry = state.entries[iso];
+        const dow = new Date(y, m, d).getDay();
+        const classes = ['cal-cell'];
+        if (dow === 0) classes.push('sunday');
+        if (dow === 6) classes.push('saturday');
+        if (iso === today) classes.push('today');
+
+        let style = '';
+        let indicator = '';
+        if (entry?.imageUrl) {
+          classes.push('has-image');
+          style = `style="background-image: url('${entry.imageUrl.replace(/'/g, "\\'")}')"`;
+        } else if (entry?.diary) {
+          indicator = '<div class="indicator"></div>';
+        }
+
+        html += `<div class="${classes.join(' ')}" data-date="${iso}" ${style}>
+          <span class="day-num">${d}</span>
+          ${indicator}
+        </div>`;
+      }
+      calGrid.innerHTML = html;
+
+      calGrid.querySelectorAll('.cal-cell:not(.empty)').forEach(cell => {
+        cell.addEventListener('click', () => openDetail(cell.dataset.date));
+      });
+    }
+
+    function renderGallery() {
+      const items = Object.values(state.entries)
+        .filter(e => e.imageUrl)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      if (!items.length) {
+        galGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="emoji">🖼️</div>이번 달은 아직<br>그림일기가 없어요</div>';
+        return;
+      }
+
+      galGrid.innerHTML = items.map(e => {
+        const d = new Date(e.date);
+        const label = `${d.getMonth() + 1}/${d.getDate()} ${DAYS_KR[d.getDay()]}`;
+        return `<div class="gallery-item" data-date="${e.date}">
+          <img src="${e.imageUrl}" alt="${label}" loading="lazy">
+          <div class="gallery-label">${label}${e.dayCount ? ' · ' + e.dayCount : ''}</div>
+        </div>`;
+      }).join('');
+
+      galGrid.querySelectorAll('.gallery-item').forEach(el => {
+        el.addEventListener('click', () => openDetail(el.dataset.date));
+      });
+    }
+
+    // ===== 디테일 모달 =====
+    async function openDetail(date) {
+      state.selectedDate = date;
+      modal.style.display = 'flex';
+      detailBody.innerHTML = '<div class="loader">불러오는 중...</div>';
+      detailDayCount.textContent = '';
+
+      const d = new Date(date);
+      detailDate.textContent = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${DAYS_KR[d.getDay()]})`;
+
+      try {
+        // 캐시에 있으면 그거 사용 + 백그라운드 새로고침
+        let entry = state.entries[date] || await fetchEntry(date);
+        if (!entry) {
+          detailBody.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>${date} 페이지가 노션에 없어요<br><small>매일 자동 생성되는지 확인해주세요</small></div>`;
+          return;
+        }
+        if (entry.dayCount) detailDayCount.textContent = entry.dayCount;
+        renderDetailBody(entry);
+      } catch (e) {
+        detailBody.innerHTML = `<div class="empty-state"><div class="emoji">😢</div>${e.message}</div>`;
+      }
+    }
+
+    function renderDetailBody(entry) {
+      const hasImage = !!entry.imageUrl;
+      detailBody.innerHTML = `
+        ${hasImage ? `<img src="${entry.imageUrl}" class="image-display" alt="그림일기">` : ''}
+
+        <label class="upload-area" id="uploadArea">
+          <input type="file" id="photoInput" accept="image/*">
+          <div id="uploadPlaceholder">
+            <div class="upload-icon">${hasImage ? '🔄' : '🖼️'}</div>
+            <div class="upload-text">${hasImage ? '다시 만들 사진 선택' : '사진 업로드'}</div>
+            <div class="upload-hint">JPG, PNG, WEBP</div>
+          </div>
+          <img id="uploadPreview" class="upload-preview" style="display:none;">
+        </label>
+
+        <div class="field">
+          <label>☀️ 날씨</label>
+          <input type="text" id="detailWeather" value="${escapeHtml(entry.weather || '')}" placeholder="☀️">
+        </div>
+
+        <div class="field">
+          <label>✏️ 일기 내용</label>
+          <textarea id="detailDiary" placeholder="오늘의 일기">${escapeHtml(entry.diary || '')}</textarea>
+        </div>
+
+        <button class="submit-btn" id="generateBtn">✨ ${hasImage ? '다시 만들기' : '그림일기 만들기'}</button>
+        <div class="loading-text" id="loadingText" style="display:none;">생성 중... (30~60초 소요됩니다 🌸)</div>
+
+        ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
+      `;
+
+      const photoInput = $('photoInput');
+      const uploadPreview = $('uploadPreview');
+      const uploadPlaceholder = $('uploadPlaceholder');
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          uploadPreview.src = ev.target.result;
+          uploadPreview.style.display = 'block';
+          uploadPlaceholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      $('generateBtn').addEventListener('click', () => handleGenerate(entry));
+    }
+
+    async function handleGenerate(entry) {
+      const photoFile = $('photoInput').files[0];
+      const weather = $('detailWeather').value.trim() || '☀️';
+      const diary = $('detailDiary').value.trim();
+
+      if (!photoFile) { showToast('사진을 업로드해주세요'); return; }
+      if (!diary) { showToast('일기 내용을 입력해주세요'); return; }
+
+      const btn = $('generateBtn');
+      const loading = $('loadingText');
+      btn.disabled = true;
+      btn.textContent = '✨ 생성 중...';
+      loading.style.display = 'block';
+
+      try {
+        const result = await generateImage(state.selectedDate, weather, diary, photoFile);
+        showToast('그림일기 생성 완료!');
+        // 캐시 업데이트
+        if (state.entries[state.selectedDate]) {
+          state.entries[state.selectedDate].imageUrl = result.notionImageUrl || result.r2Url;
+          state.entries[state.selectedDate].weather = weather;
+          state.entries[state.selectedDate].diary = diary;
+        }
+        // 모달 다시 그리기
+        renderDetailBody(state.entries[state.selectedDate]);
+        // 캘린더/갤러리 갱신
+        renderCalendar();
+        renderGallery();
+      } catch (e) {
+        showToast('실패: ' + e.message, 4000);
+        btn.disabled = false;
+        btn.textContent = '✨ 다시 시도';
+        loading.style.display = 'none';
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // ===== 이벤트 =====
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        state.view = t.dataset.view;
+        calView.classList.toggle('active', state.view === 'calendar');
+        galView.classList.toggle('active', state.view === 'gallery');
       });
     });
 
-    weatherInput.addEventListener('input', () => {
-      weatherBtns.forEach(b => b.classList.remove('active'));
+    $('prevMonth').addEventListener('click', () => {
+      state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() - 1, 1);
+      renderCurrentMonth();
+    });
+    $('nextMonth').addEventListener('click', () => {
+      state.currentMonth = new Date(state.currentMonth.getFullYear(), state.currentMonth.getMonth() + 1, 1);
+      renderCurrentMonth();
     });
 
-    // ===== 생성 요청 =====
-    submitBtn.addEventListener('click', async () => {
-      const file = photoInput.files[0];
-      if (!file) {
-        alert('사진을 업로드해주세요!');
-        return;
-      }
-      const diary = diaryInput.value.trim();
-      if (!diary) {
-        alert('일기 내용을 입력해주세요!');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = '✨ 생성 중...';
-      loadingText.style.display = 'block';
-      result.classList.remove('show');
-
-      try {
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('date', formatDate(dateInput.value));
-        formData.append('weather', weatherInput.value || '☀️');
-        formData.append('diary', diary);
-
-        const response = await fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'X-Secret-Key': SECRET_KEY },
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(errText || `HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        resultImg.src = data.imageUrl;
-        urlInput.value = data.imageUrl;
-        result.classList.add('show');
-        result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } catch (error) {
-        alert('생성 실패 😢\n\n' + error.message);
-        console.error(error);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '✨ 그림일기 만들기';
-        loadingText.style.display = 'none';
-      }
+    $('closeBtn').addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
     });
 
-    // ===== URL 복사 =====
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(urlInput.value);
-        copyBtn.textContent = '✓ 복사됨';
-        copyBtn.classList.add('success');
-        setTimeout(() => {
-          copyBtn.textContent = '📋 복사';
-          copyBtn.classList.remove('success');
-        }, 2000);
-      } catch (e) {
-        urlInput.select();
-        document.execCommand('copy');
-      }
-    });
-
-    // ===== 다운로드 =====
-    downloadBtn.addEventListener('click', async () => {
-      try {
-        const res = await fetch(urlInput.value);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `diary-${formatDate(dateInput.value).replace(/\s/g, '-')}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (e) {
-        alert('다운로드 실패: ' + e.message);
-      }
-    });
-
-    // ===== 새로 만들기 =====
-    newBtn.addEventListener('click', () => {
-      result.classList.remove('show');
-      photoInput.value = '';
-      preview.src = '';
-      preview.classList.remove('show');
-      uploadPlaceholder.style.display = 'block';
-      diaryInput.value = '';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // ===== 시작 =====
+    renderCurrentMonth();
   </script>
 </body>
 </html>
