@@ -19,23 +19,19 @@
         radial-gradient(circle at 80% 80%, #FFF0F5 0%, transparent 40%),
         linear-gradient(135deg, #FFF5F7 0%, #FFE4E1 100%);
       min-height: 100vh;
-      padding: 14px 6px;
+      padding: 20px 12px;
       color: #5C4033;
       -webkit-tap-highlight-color: transparent;
     }
     .app {
-      max-width: 580px;
+      max-width: 560px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.9);
       border-radius: 24px;
-      padding: 22px 14px;
+      padding: 24px 20px;
       box-shadow: 0 8px 32px rgba(255, 182, 193, 0.25);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 209, 220, 0.5);
-    }
-    @media (min-width: 600px) {
-      body { padding: 24px 16px; }
-      .app { padding: 28px 24px; }
     }
     h1 {
       font-family: 'Gaegu', sans-serif;
@@ -124,13 +120,13 @@
       color: #A08A7E;
       padding: 4px 0;
     }
-    .weekday-header div:nth-child(6) { color: #8AAEE0; }
-    .weekday-header div:nth-child(7) { color: #E08A8A; }
+    .weekday-header div:first-child { color: #E08A8A; }
+    .weekday-header div:last-child { color: #8AAEE0; }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 3px;
+      gap: 4px;
     }
     .cal-cell {
       aspect-ratio: 1;
@@ -145,7 +141,7 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      padding: 3px;
+      padding: 4px;
     }
     .cal-cell.empty {
       background: transparent;
@@ -171,7 +167,7 @@
       backdrop-filter: blur(2px);
     }
     .day-num {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       color: #5C4033;
       line-height: 1;
@@ -182,10 +178,10 @@
     .cal-cell.has-image.saturday .day-num { color: #5C4033; }
     .indicator {
       position: absolute;
-      bottom: 5px;
-      right: 5px;
-      width: 7px;
-      height: 7px;
+      bottom: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #FFB6C1;
     }
@@ -193,20 +189,20 @@
     /* 갤러리 */
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
     .gallery-item {
       aspect-ratio: 2/3;
-      border-radius: 14px;
+      border-radius: 10px;
       overflow: hidden;
       background: #FFFAFB;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
+      box-shadow: 0 2px 8px rgba(255, 182, 193, 0.2);
       transition: all 0.2s;
     }
-    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 182, 193, 0.35); }
+    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3); }
     .gallery-item img {
       width: 100%;
       height: 100%;
@@ -218,8 +214,8 @@
       bottom: 0; left: 0; right: 0;
       background: linear-gradient(transparent, rgba(0,0,0,0.6));
       color: white;
-      font-size: 13px;
-      padding: 16px 10px 8px;
+      font-size: 10px;
+      padding: 12px 6px 4px;
       font-weight: 500;
       font-family: 'Gaegu', sans-serif;
     }
@@ -398,86 +394,6 @@
       max-width: 90vw;
       text-align: center;
     }
-
-    /* 모드 토글 (AI 생성 / 직접 업로드) */
-    .mode-toggle {
-      display: flex;
-      gap: 6px;
-      background: #FFF0F2;
-      padding: 4px;
-      border-radius: 10px;
-      margin-bottom: 14px;
-    }
-    .mode-btn {
-      flex: 1;
-      padding: 9px;
-      background: transparent;
-      border: none;
-      border-radius: 7px;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 500;
-      color: #A08A7E;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .mode-btn.active {
-      background: white;
-      color: #D4756B;
-      box-shadow: 0 2px 4px rgba(255, 182, 193, 0.25);
-      font-weight: 700;
-    }
-
-    /* 읽기 전용 일기 표시 */
-    .diary-readonly {
-      background: #FFFAFB;
-      border: 1px solid #FFE4E9;
-      border-radius: 14px;
-      padding: 16px 18px;
-      margin-bottom: 14px;
-    }
-    .diary-readonly .meta {
-      font-size: 13px;
-      color: #A08A7E;
-      margin-bottom: 10px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .diary-readonly .meta .weather { font-size: 16px; }
-    .diary-readonly .text {
-      color: #5C4033;
-      line-height: 1.6;
-      font-size: 14px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .diary-readonly .text.empty {
-      color: #B8A199;
-      font-style: italic;
-    }
-
-    /* 다시 만들기/수정 토글 버튼 */
-    .toggle-edit-btn {
-      width: 100%;
-      padding: 12px;
-      background: #FFE4E9;
-      color: #D4756B;
-      border: none;
-      border-radius: 12px;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.15s;
-    }
-    .toggle-edit-btn:hover { background: #FFD1DC; }
-    .edit-form {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px dashed #FFD1DC;
-    }
   </style>
 </head>
 <body>
@@ -498,7 +414,7 @@
 
     <div id="calendarView" class="view active">
       <div class="weekday-header">
-        <div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div><div>일</div>
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
       </div>
       <div id="calendarGrid" class="calendar-grid"></div>
     </div>
@@ -606,27 +522,6 @@
       return await res.json();
     }
 
-    async function uploadDirectImage(date, weather, diary, photoFile) {
-      const fd = new FormData();
-      fd.append('date', date);
-      if (weather) fd.append('weather', weather);
-      if (diary) fd.append('diary', diary);
-      fd.append('image', photoFile);
-      const res = await fetch(`${WORKER_URL}/upload-direct`, {
-        method: 'POST',
-        headers: { 'X-Secret-Key': SECRET_KEY },
-        body: fd
-      });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error(errData.error || '업로드 실패');
-      }
-      return await res.json();
-    }
-
-    // 디테일 모달의 현재 모드: 'generate' (AI 생성) | 'upload' (직접 업로드)
-    let currentMode = 'generate';
-
     // ===== 렌더링 =====
     async function renderCurrentMonth() {
       const mKey = monthKey(state.currentMonth);
@@ -651,7 +546,7 @@
     function renderCalendar() {
       const y = state.currentMonth.getFullYear();
       const m = state.currentMonth.getMonth();
-      const firstDay = (new Date(y, m, 1).getDay() + 6) % 7; // 월=0 ~ 일=6
+      const firstDay = new Date(y, m, 1).getDay(); // 일=0
       const lastDate = new Date(y, m + 1, 0).getDate();
       const today = todayISO();
 
@@ -741,20 +636,14 @@
 
     function renderDetailBody(entry) {
       const hasImage = !!entry.imageUrl;
-      currentMode = 'generate'; // 모달 열릴 때마다 기본 모드로 리셋
-
-      // 편집 폼 HTML (재사용)
-      const formHtml = `
-        <div class="mode-toggle">
-          <button type="button" class="mode-btn active" data-mode="generate">✨ AI로 만들기</button>
-          <button type="button" class="mode-btn" data-mode="upload">📤 직접 업로드</button>
-        </div>
+      detailBody.innerHTML = `
+        ${hasImage ? `<img src="${entry.imageUrl}" class="image-display" alt="그림일기">` : ''}
 
         <label class="upload-area" id="uploadArea">
           <input type="file" id="photoInput" accept="image/*">
           <div id="uploadPlaceholder">
-            <div class="upload-icon" id="uploadIcon">${hasImage ? '🔄' : '🖼️'}</div>
-            <div class="upload-text" id="uploadText">${hasImage ? '다시 만들 참고 사진' : '참고 사진 업로드'}</div>
+            <div class="upload-icon">${hasImage ? '🔄' : '🖼️'}</div>
+            <div class="upload-text">${hasImage ? '다시 만들 사진 선택' : '사진 업로드'}</div>
             <div class="upload-hint">JPG, PNG, WEBP</div>
           </div>
           <img id="uploadPreview" class="upload-preview" style="display:none;">
@@ -766,58 +655,17 @@
         </div>
 
         <div class="field">
-          <label>✏️ 일기 내용 <span id="diaryLabel" style="color:#D4756B; font-size:11px; font-weight:400;">(필수)</span></label>
+          <label>✏️ 일기 내용</label>
           <textarea id="detailDiary" placeholder="오늘의 일기">${escapeHtml(entry.diary || '')}</textarea>
         </div>
 
         <button class="submit-btn" id="generateBtn">✨ ${hasImage ? '다시 만들기' : '그림일기 만들기'}</button>
         <div class="loading-text" id="loadingText" style="display:none;">생성 중... (30~60초 소요됩니다 🌸)</div>
+
+        ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
       `;
 
-      if (hasImage) {
-        // 이미 그림이 있으면: 깔끔한 뷰 + 다시 만들기 토글
-        detailBody.innerHTML = `
-          <img src="${entry.imageUrl}" class="image-display" alt="그림일기">
-          <div class="diary-readonly">
-            ${(entry.weather || entry.dayCount) ? `<div class="meta">
-              ${entry.weather ? `<span class="weather">${escapeHtml(entry.weather)}</span>` : ''}
-              ${entry.dayCount ? `<span>· ${escapeHtml(entry.dayCount)}</span>` : ''}
-            </div>` : ''}
-            <div class="text${entry.diary ? '' : ' empty'}">${entry.diary ? escapeHtml(entry.diary) : '(일기 내용 없음)'}</div>
-          </div>
-          ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
-          <button class="toggle-edit-btn" id="toggleEditBtn">🔄 다시 만들거나 수정하기</button>
-          <div class="edit-form" id="editForm" style="display:none;">${formHtml}</div>
-        `;
-
-        const toggleBtn = $('toggleEditBtn');
-        const editForm = $('editForm');
-        toggleBtn.addEventListener('click', () => {
-          const isOpen = editForm.style.display !== 'none';
-          if (isOpen) {
-            editForm.style.display = 'none';
-            toggleBtn.textContent = '🔄 다시 만들거나 수정하기';
-          } else {
-            editForm.style.display = 'block';
-            toggleBtn.textContent = '✕ 닫기';
-            setupFormHandlers(entry, hasImage);
-            setTimeout(() => editForm.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-          }
-        });
-      } else {
-        // 그림이 없으면: 폼 바로 표시
-        detailBody.innerHTML = `
-          ${formHtml}
-          ${entry.pageUrl ? `<a href="${entry.pageUrl}" target="_blank" class="notion-link">📔 노션 페이지 열기 →</a>` : ''}
-        `;
-        setupFormHandlers(entry, hasImage);
-      }
-    }
-
-    function setupFormHandlers(entry, hasImage) {
       const photoInput = $('photoInput');
-      if (!photoInput) return;
-
       const uploadPreview = $('uploadPreview');
       const uploadPlaceholder = $('uploadPlaceholder');
       photoInput.addEventListener('change', (e) => {
@@ -832,80 +680,41 @@
         reader.readAsDataURL(file);
       });
 
-      // 모드 토글
-      document.querySelectorAll('.mode-btn').forEach(b => {
-        b.addEventListener('click', () => {
-          currentMode = b.dataset.mode;
-          document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
-          b.classList.add('active');
-
-          const uploadIcon = $('uploadIcon');
-          const uploadText = $('uploadText');
-          const generateBtn = $('generateBtn');
-          const diaryLabel = $('diaryLabel');
-
-          if (currentMode === 'generate') {
-            uploadIcon.textContent = hasImage ? '🔄' : '🖼️';
-            uploadText.textContent = hasImage ? '다시 만들 참고 사진' : '참고 사진 업로드';
-            generateBtn.textContent = '✨ ' + (hasImage ? '다시 만들기' : '그림일기 만들기');
-            diaryLabel.textContent = '(필수)';
-          } else {
-            uploadIcon.textContent = '📤';
-            uploadText.textContent = '그림일기 이미지 업로드';
-            generateBtn.textContent = '📤 노션에 올리기';
-            diaryLabel.textContent = '(선택)';
-          }
-        });
-      });
-
-      $('generateBtn').addEventListener('click', () => handleSubmit(entry));
+      $('generateBtn').addEventListener('click', () => handleGenerate(entry));
     }
 
-    async function handleSubmit(entry) {
+    async function handleGenerate(entry) {
       const photoFile = $('photoInput').files[0];
-      const weather = $('detailWeather').value.trim();
+      const weather = $('detailWeather').value.trim() || '☀️';
       const diary = $('detailDiary').value.trim();
 
       if (!photoFile) { showToast('사진을 업로드해주세요'); return; }
-      // generate 모드에서는 일기 필수
-      if (currentMode === 'generate' && !diary) {
-        showToast('일기 내용을 입력해주세요');
-        return;
-      }
+      if (!diary) { showToast('일기 내용을 입력해주세요'); return; }
 
       const btn = $('generateBtn');
       const loading = $('loadingText');
       btn.disabled = true;
-
-      if (currentMode === 'generate') {
-        btn.textContent = '✨ 생성 중...';
-        loading.style.display = 'block';
-      } else {
-        btn.textContent = '📤 업로드 중...';
-      }
+      btn.textContent = '✨ 생성 중...';
+      loading.style.display = 'block';
 
       try {
-        let result;
-        if (currentMode === 'generate') {
-          result = await generateImage(state.selectedDate, weather || '☀️', diary, photoFile);
-        } else {
-          result = await uploadDirectImage(state.selectedDate, weather, diary, photoFile);
-        }
-
-        showToast(currentMode === 'generate' ? '그림일기 생성 완료!' : '업로드 완료!');
+        const result = await generateImage(state.selectedDate, weather, diary, photoFile);
+        showToast('그림일기 생성 완료!');
         // 캐시 업데이트
         if (state.entries[state.selectedDate]) {
           state.entries[state.selectedDate].imageUrl = result.notionImageUrl || result.r2Url;
-          if (weather) state.entries[state.selectedDate].weather = weather;
-          if (diary) state.entries[state.selectedDate].diary = diary;
+          state.entries[state.selectedDate].weather = weather;
+          state.entries[state.selectedDate].diary = diary;
         }
+        // 모달 다시 그리기
         renderDetailBody(state.entries[state.selectedDate]);
+        // 캘린더/갤러리 갱신
         renderCalendar();
         renderGallery();
       } catch (e) {
         showToast('실패: ' + e.message, 4000);
         btn.disabled = false;
-        btn.textContent = currentMode === 'generate' ? '✨ 다시 시도' : '📤 다시 시도';
+        btn.textContent = '✨ 다시 시도';
         loading.style.display = 'none';
       }
     }
